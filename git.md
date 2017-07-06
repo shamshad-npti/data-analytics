@@ -1,11 +1,11 @@
-# create a new repo
+# Create a New Repo
 ```shell
 $ mkdir test-repo
 $ cd test-repo
 $ git init
 ```
 
-# add a new file to git
+# Add a New File to Git
 
 ```shell
 # create a new file
@@ -16,6 +16,15 @@ $ git status
 
 The output of above command would be similar for following. You can see that `readme.md` is an untracked file.
 
+```
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	git.md
+	----
+	----
+```
+
 ```shell
 # add individual file to git
 $ git add readme.md
@@ -24,3 +33,4 @@ $ git add --all
 # add only updated file to git
 $ git add -u
 ```
+
