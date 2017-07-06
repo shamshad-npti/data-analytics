@@ -34,3 +34,15 @@ $ git add --all
 $ git add -u
 ```
 
+### Use `commit` command to commit a change
+
+```shell
+$ git commit -m "Initial commit"
+```
+
+### See commit log with `log` command
+
+```shell
+$ git log
+```
+
