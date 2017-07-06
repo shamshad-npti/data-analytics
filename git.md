@@ -49,7 +49,6 @@ $ git commit -m "Initial commit"
 $ git log
 ```
 
-
 ### Create a New Branch
 ```shell
 # create a branch name "dev"
