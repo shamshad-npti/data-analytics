@@ -72,3 +72,64 @@ $ git checkout master
 $ git chechout -b feature-32 dev
 ```
 
+```
+$ echo "Dfd" | git hash-object -w --stdin
+
+$ git cat-file -p hash-value
+               -t hash-value
+
+$ git update-index --add --cachenfo 100644 hash fielname
+$ git write-tree
+
+$ git commit-tree
+```
+
+# Git Advanced Tutorial
+* Commit By Hand
+* Rebase
+* Interactive Rebase
+* Pull Requests
+* External Diff Tools
+* Advanced Logging
+* Reflog
+* Reset
+
+### Commit By Hand
+
+1. Create and Initialize a repo
+
+```shell
+$ mkdir git-advanced; cd git-advanced
+$ git init
+# hash simple text in git
+# when following command execute you will see a hash in console
+# let that hash be 45e0a4bc615eb1dac06f08043c1e1efa75311baf
+$ echo "Git In Depth" | git hash-object -w --stdin
+45e0a4bc615eb1dac06f08043c1e1efa75311baf
+
+$ git cat-file -p 45e0a
+Git In Depth
+
+# update-index will register file content in the working tree
+# to the index
+$ git update-index --add --cacheinfo 100644 45e0a danger.txt
+
+# Now try git status
+$ git status
+On branch master
+
+Initial commit
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   danger.txt
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	deleted:    danger.txt
+
+# Use write-tree to create a tree object from the current index
+```
