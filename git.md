@@ -132,4 +132,35 @@ Changes not staged for commit:
 	deleted:    danger.txt
 
 # Use write-tree to create a tree object from the current index
+$ git write-tree
+3650690356f559c43df89f83c878b6440d1616fd
+
+# You can see tree information with following command
+$ git cat-file -t 36506
+
+# Create a new commit object from provided tree object
+$ git commit-tree 36506 -m "Commit by Hand"
+
+# Try git log
+$ git log
+fatal: your current branch 'master' does not have any commits yet
+
+# Look at content of HEAD
+$ cat .git/HEAD
+ref: refs/heads/master
+
+# update the ref name stored in ref safely
+$ git update-ref refs/heads/master 084cbaf2aeb3166b30491c9f6029834a511e0cbc
+
+# Now try git log again
+$ git log
+commit 084cbaf2aeb3166b30491c9f6029834a511e0cbc
+Author: Shamshad Alam <shamshad.npti@gmail.com>
+Date:   Sat Jul 8 09:42:44 2017 +1000
+
+    Commit By Hand
+
+
+# Finally checkout files
+$ git checkout HEAD -- danger.txt
 ```
