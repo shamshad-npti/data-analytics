@@ -164,3 +164,9 @@ Date:   Sat Jul 8 09:42:44 2017 +1000
 # Finally checkout files
 $ git checkout HEAD -- danger.txt
 ```
+
+# git reflog
+# git reset --hard HEAD@{1}
+
+# git checkout feature
+# git rebase master
