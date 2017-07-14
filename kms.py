@@ -188,7 +188,7 @@ def _main():
 
     func[args.command](args)
 
-KeyManager.PROJECT = "equifax-au-digital-dev"
+KeyManager.PROJECT = None
 
 if __name__ == '__main__':
     _main()
