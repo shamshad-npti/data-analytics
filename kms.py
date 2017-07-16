@@ -1,6 +1,8 @@
 """
-Manage key securely
+A small module to manage keys
+in datastore
 """
+
 import argparse
 import re
 import random
@@ -25,8 +27,21 @@ class NotFoundError(Exception):
 
 class KeyManager(object):
     """
-    Manage all keys
+    Manage your keys securely
+    =============================
+    1. To initialize
+    $ python kms.py init
+
+    2. To save a new key encrypted using AES
+    $ python kms.py save --name key-name --source 'string|file://file_location'
+
+    3. To get the value of encrypted data
+    $ python kms.py get --name key-name
+
+    4. To delete the value of encrypted data
+    $ python kms.py delete --name key-name
     """
+
     PUBLIC_KEY_ID = "publicKeyId"
     PRIVATE_KEY_ID = "privateKeyId"
     SECRET_KEY = "secretKey"
@@ -45,14 +60,14 @@ class KeyManager(object):
         if fetch:
             self._public_key = RSA.importKey(self.get(self.PUBLIC_KEY_ID))
             self._private_key = RSA.importKey(self.get(self.PRIVATE_KEY_ID))
-            self._secretKey = self._private_key.decrypt(self.get(self.SECRET_KEY))
+            self._secret_key = self._private_key.decrypt(self.get(self.SECRET_KEY))
 
     def _create_key(self, path, namespace=None):
         namespace = namespace or self.NAMESPACE
         return self._client.key(self.NAMESPACE, path, namespace=namespace)
 
     def _save(self, key, value):
-        entity = datastore.Entity(key=key)
+        entity = datastore.Entity(key=key, exclude_from_indexes=(self.FIELD,))
         entity.update({self.FIELD: value})
         self._client.put(entity)
 
@@ -69,7 +84,7 @@ class KeyManager(object):
         encrypt public key
         """
         init_vector = Random.new().read(AES.block_size)
-        cipher = AES.new(self._secretKey, AES.MODE_CBC, init_vector)
+        cipher = AES.new(self._secret_key, AES.MODE_CBC, init_vector)
         return base64.b64encode(init_vector + cipher.encrypt(self._pad(value)))
 
     def encrypt_and_save(self, name, value):
@@ -79,7 +94,7 @@ class KeyManager(object):
         """
         key = self._create_key(name)
         encrypted_value = self.encrypt(value)
-        self._save(key, encrypted_value[0])
+        self._save(key, encrypted_value)
 
     def get(self, name):
         """
@@ -96,7 +111,7 @@ class KeyManager(object):
         """
         value = base64.b64decode(value)
         init_vector = value[:AES.block_size]
-        cipher = AES.new(self._secretKey, AES.MODE_CBC, init_vector)
+        cipher = AES.new(self._secret_key, AES.MODE_CBC, init_vector)
         return self._unpad(cipher.decrypt(value[AES.block_size:]).decode("utf-8"))
 
     def get_and_decrypt(self, name):
@@ -125,7 +140,7 @@ class KeyManager(object):
         chars = string.ascii_letters + string.digits + "!@#$~`.,}{[]()"
         password_plain_text = ''.join([random.choice(chars) for _ in range(15)])
         password_hash = hashlib.sha256(password_plain_text).digest()
-        password_encrypted = rsa_key.publickey().encrypt(password_hash)
+        password_encrypted = rsa_key.publickey().encrypt(password_hash, 0)[0]
 
         self._save(self._create_key(self.PRIVATE_KEY_ID), rsa_key.exportKey())
         self._save(self._create_key(self.PUBLIC_KEY_ID), rsa_key.publickey().exportKey())
@@ -137,11 +152,7 @@ def _save(args):
         data = "\n".join([l[:-1] for l in open(args.source[len("file://"):], "rb").readlines()])
     else:
         data = args.source
-    key_manager = KeyManager()
-    father = key_manager.encrypt(data)
-    print father
-    print key_manager.decrypt(father)
-    key_manager.encrypt_and_save(args.name, data)
+    KeyManager().encrypt_and_save(args.name, data)
 
 def _get(args):
     key_manager = KeyManager()
